@@ -1,9 +1,13 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/imhenne187/SilenceElerium/refs/heads/main/src/SilenceEleriumLibrary.luau", true))() 
 
 local window = library:AddWindow("ALEKING HUB | Private Farming", {
-    main_color = Color3.fromRGB(0, 0, 0),
+    main_color = Color3.fromRGB(192, 192, 192),
+    title_bar = {Color3.fromRGB(220, 220, 220), Color3.fromRGB(150, 150, 150)},
+    background = {Color3.fromRGB(40, 40, 40)},
+    background_transparency = 0,
     min_size = Vector2.new(600, 600),
-    can_resize = false
+    toggle_key = Enum.KeyCode.RightShift,
+    can_resize = true,
 })
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
@@ -50,7 +54,36 @@ end
 
 task.wait(1)
 
-local FastRebTab = window:AddTab("Fast Rebirth")
+-- ====== INFO TAB ======
+local infoTab = window:AddTab("ℹ️  Info")
+infoTab:AddLabel("━━━━━━━━  ⚡ ALEKING HUB INFO  ━━━━━━━━")
+infoTab:AddLabel("🎮  Script:   ALEKING HUB  |  Muscle Legends")
+infoTab:AddLabel("👑  Author:   ALEKING")
+infoTab:AddLabel("📊  Version:  1.2")
+infoTab:AddLabel("📱  Discord:  discord.gg/RKCLANISBEST")
+infoTab:AddLabel("🔧  Toggle:   RightShift key")
+infoTab:AddLabel("━━━━━━━━  🌍 LIVE PLAYER INFO  ━━━━━━━━")
+local pingLbl  = infoTab:AddLabel("📶  Ping:  calculating...")
+local nameLbl  = infoTab:AddLabel("👤  Name:  "..player.Name)
+local dispLbl  = infoTab:AddLabel("🏷️  Display:  "..player.DisplayName)
+local idLbl    = infoTab:AddLabel("🆔  UserID:  "..player.UserId)
+local charLbl  = infoTab:AddLabel("🌐  Server Players:  "..#game.Players:GetPlayers())
+infoTab:AddLabel("━━━━━━━━  🖥️ SERVER INFO  ━━━━━━━━")
+local jobLbl   = infoTab:AddLabel("🖥️  JobID:  "..game.JobId:sub(1,20).."...")
+local placeLbl = infoTab:AddLabel("📍  PlaceID:  "..game.PlaceId)
+task.spawn(function()
+    while task.wait(2) do
+        pcall(function()
+            charLbl.Text = "🌐  Server Players:  "..#game.Players:GetPlayers()
+            local s=tick()
+            game:GetService("RunService").Heartbeat:Wait()
+            pingLbl.Text = "📶  Ping:  "..math.floor((tick()-s)*1000).."ms"
+        end)
+    end
+end)
+infoTab:Show()
+
+local FastRebTab = window:AddTab("⚡  Fast Rebirth")
 
 FastRebTab:AddLabel("Settings").TextSize = 30
 
@@ -227,7 +260,7 @@ FastRebTab:AddLabel("")
 local RebirthLabel = FastRebTab:AddLabel("Rebirthing:")
 RebirthLabel.TextSize = 20
 
-local fastRebirthSwitch = FastRebTab:AddSwitch("Fast Rebirth", function(state)
+local fastRebirthSwitch = FastRebTab:AddSwitch("⚡  Fast Rebirth", function(state)
     isRunning = state
     
     if state then
@@ -454,32 +487,6 @@ FastRebTab:AddButton("Jungle Lift",function()
     task.wait(0.05)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
 end)
-
-local infoTab = window:AddTab("Info")
-infoTab:Show()
-infoTab:AddLabel("Made by DEATHKING").TextSize = 20
-infoTab:AddLabel("discord.gg/RKCLANISBEST").TextSize = 20
-infoTab:AddButton("Copy Invite", function()
-    local link = "https://discord.gg/8tvVp2Tjft"
-    if setclipboard then
-        setclipboard(link)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Link Copied!";
-            Text = "You can continue to Discord now.";
-            Duration = 3;
-        })
-    else
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Error!";
-            Text = "Not Supported.";
-            Duration = 3;
-        })
-    end
-end)
-infoTab:AddLabel("")
-local wLabel = infoTab:AddLabel("VERSION:1.1")
-wLabel.TextSize = 40
-wLabel.Font = Enum.Font.Arcade
 
 -- ====== CUADRO DE TIEMPO EN PANTALLA ======
 
