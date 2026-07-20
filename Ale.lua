@@ -26,10 +26,8 @@ replicatedStorage.ChildAdded:Connect(function(child)
     end
 end)
 
-local FastRebTab = window:AddTab("Fast Rebirth")
-
-FastRebTab:AddLabel("Settings").TextSize = 30
-
+-- ====== AUTO START JUNGLE LIFT PRIMERO ======
+task.wait(0.5)
 local Player = game.Players.LocalPlayer
 local player = game.Players.LocalPlayer
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -37,6 +35,24 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local muscleEvent = player:WaitForChild("muscleEvent")
 local leaderstats = player:WaitForChild("leaderstats")
 local rebirthsStat = leaderstats:WaitForChild("Rebirths")
+
+-- 1. Clickear Jungle Lift DOS VECES
+for i = 1, 2 do
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    hrp.CFrame = CFrame.new(-8642.396484375, 6.7980651855, 2086.1030273)
+    task.wait(0.2)
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+    task.wait(0.3)
+end
+
+task.wait(1)
+
+local FastRebTab = window:AddTab("Fast Rebirth")
+
+FastRebTab:AddLabel("Settings").TextSize = 30
 
 local function formatNumber(num)
     if num >= 1e15 then return string.format("%.2fQ", num/1e15) end
@@ -465,76 +481,40 @@ local wLabel = infoTab:AddLabel("VERSION:1.1")
 wLabel.TextSize = 40
 wLabel.Font = Enum.Font.Arcade
 
--- ====== TABLA DE ESTADÍSTICAS EN TIEMPO REAL ======
+-- ====== CUADRO DE TIEMPO EN PANTALLA ======
 
-wait(0.5)
+task.wait(0.5)
 
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "AleKingStatsGui"
+screenGui.Name = "TimeTrackerGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = game.CoreGui
 
--- Crear el marco principal (como el de Anti Afk)
+-- Crear el cuadro principal
 local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+mainFrame.Name = "TimeFrame"
+mainFrame.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
 mainFrame.BorderSizePixel = 0
 mainFrame.Position = UDim2.new(0.7, 0, 0.1, 0)
-mainFrame.Size = UDim2.new(0, 400, 0, 280)
+mainFrame.Size = UDim2.new(0, 300, 0, 150)
 mainFrame.Parent = screenGui
 mainFrame.Active = true
 mainFrame.Draggable = true
 
--- Título
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Name = "TitleLabel"
-titleLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
-titleLabel.BorderSizePixel = 0
-titleLabel.Position = UDim2.new(0, 0, 0, 0)
-titleLabel.Size = UDim2.new(1, 0, 0, 40)
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-titleLabel.TextSize = 24
-titleLabel.Text = "AleKing Stats Rebirth"
-titleLabel.Parent = mainFrame
+-- Label de tiempo
+local timeDisplayLabel = Instance.new("TextLabel")
+timeDisplayLabel.Name = "TimeDisplay"
+timeDisplayLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+timeDisplayLabel.BorderSizePixel = 0
+timeDisplayLabel.Position = UDim2.new(0, 0, 0, 0)
+timeDisplayLabel.Size = UDim2.new(1, 0, 1, 0)
+timeDisplayLabel.Font = Enum.Font.GothamBold
+timeDisplayLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+timeDisplayLabel.TextSize = 28
+timeDisplayLabel.TextWrapped = true
+timeDisplayLabel.Parent = mainFrame
 
--- Contenedor de estadísticas
-local statsFrame = Instance.new("Frame")
-statsFrame.Name = "StatsFrame"
-statsFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-statsFrame.BorderSizePixel = 0
-statsFrame.Position = UDim2.new(0, 0, 0, 40)
-statsFrame.Size = UDim2.new(1, 0, 1, -80)
-statsFrame.Parent = mainFrame
-
-local statsLabel = Instance.new("TextLabel")
-statsLabel.Name = "StatsLabel"
-statsLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-statsLabel.BorderSizePixel = 0
-statsLabel.Position = UDim2.new(0, 10, 0, 10)
-statsLabel.Size = UDim2.new(1, -20, 1, -20)
-statsLabel.Font = Enum.Font.GothamSemibold
-statsLabel.TextColor3 = Color3.fromRGB(192, 192, 192)
-statsLabel.TextSize = 18
-statsLabel.TextXAlignment = Enum.TextXAlignment.Left
-statsLabel.TextYAlignment = Enum.TextYAlignment.Top
-statsLabel.TextWrapped = true
-statsLabel.Parent = statsFrame
-
--- Pie de página
-local footerLabel = Instance.new("TextLabel")
-footerLabel.Name = "FooterLabel"
-footerLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
-footerLabel.BorderSizePixel = 0
-footerLabel.Position = UDim2.new(0, 0, 1, -40)
-footerLabel.Size = UDim2.new(1, 0, 0, 40)
-footerLabel.Font = Enum.Font.Gotham
-footerLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-footerLabel.TextSize = 14
-footerLabel.Text = "Made by xxd3athk1ngxx"
-footerLabel.Parent = mainFrame
-
--- Actualizar estadísticas en tiempo real
+-- Actualizar tiempo en tiempo real
 task.spawn(function()
     while true do
         local elapsed = isRunning and (tick() - startTime + totalElapsed) or totalElapsed
@@ -543,43 +523,16 @@ task.spawn(function()
         local minutes = math.floor((elapsed % 3600) / 60)
         local seconds = math.floor(elapsed % 60)
         
-        local gained = rebirthsStat.Value - initialRebirths
-        
-        statsLabel.Text = string.format(
-            "⏱️  TIME: %dd %dh %dm %ds\n\n" ..
-            "✨  REBIRTHS: %s\n\n" ..
-            "📊  GAINED: %s\n\n" ..
-            "🚀  STATUS: %s",
+        timeDisplayLabel.Text = string.format("%dd %dh %dm %ds\n%s", 
             days, hours, minutes, seconds,
-            formatNumber(rebirthsStat.Value),
-            formatNumber(gained),
-            isRunning and "🔴 RUNNING" or "⏸️  PAUSED"
-        )
-        task.wait(0.5)
+            isRunning and "Rebirthing" or "Paused")
+        task.wait(0.1)
     end
 end)
 
 -- Anti AFK
-local bb=game:service'VirtualUser'
+local antiAfkService = game:service'VirtualUser'
 game:service'Players'.LocalPlayer.Idled:connect(function()
-    bb:CaptureController()bb:ClickButton2(Vector2.new())
-    footerLabel.Text = "Anti-AFK Activated!"
-    task.wait(2)
-    footerLabel.Text = "Made by xxd3athk1ngxx"
+    antiAfkService:CaptureController()
+    antiAfkService:ClickButton2(Vector2.new())
 end)
-
--- ====== AUTO START AL EJECUTAR ======
-task.wait(1)
-
--- 1. Clickear Jungle Lift UNA VEZ
-local player = game.Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-hrp.CFrame = CFrame.new(-8642.396484375, 6.7980651855, 2086.1030273)
-task.wait(0.2)
-VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-task.wait(0.05)
-VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-task.wait(1)
-
--- 2, 3, 4 Ya están activados por los .Set(true) en los switches
