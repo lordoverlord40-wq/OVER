@@ -3,8 +3,8 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/imhen
 local window = library:AddWindow("ALEKING HUB | Private Farming", {
     main_color = Color3.fromRGB(192, 192, 192),
     title_bar = {Color3.fromRGB(220, 220, 220), Color3.fromRGB(80, 80, 80)},
-    background = {Color3.fromRGB(60, 60, 60)},
-    background_transparency = 0.15,
+    background = {Color3.fromRGB(192, 192, 192)},
+    background_transparency = 0.3,
     min_size = Vector2.new(600, 600),
     toggle_key = Enum.KeyCode.RightShift,
     can_resize = true,
@@ -501,10 +501,11 @@ screenGui.Parent = game.CoreGui
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "TimeFrame"
 mainFrame.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+mainFrame.BackgroundTransparency = 0.2
 mainFrame.BorderSizePixel = 2
 mainFrame.BorderColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.Position = UDim2.new(0.7, 0, 0.1, 0)
-mainFrame.Size = UDim2.new(0, 320, 0, 220)
+mainFrame.Size = UDim2.new(0, 120, 0, 180)
 mainFrame.Parent = screenGui
 mainFrame.Active = true
 mainFrame.Draggable = true
@@ -515,32 +516,34 @@ titleLabel.Name = "Title"
 titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 titleLabel.BorderSizePixel = 0
 titleLabel.Position = UDim2.new(0, 0, 0, 0)
-titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Size = UDim2.new(1, 0, 0, 35)
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextColor3 = Color3.fromRGB(192, 192, 192)
-titleLabel.TextSize = 18
-titleLabel.Text = "⏱️ AleKing Stats"
+titleLabel.TextSize = 14
+titleLabel.Text = "⏱️ Stats"
 titleLabel.Parent = mainFrame
 
 -- Contenedor de stats
 local statsContainer = Instance.new("Frame")
 statsContainer.Name = "StatsContainer"
 statsContainer.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+statsContainer.BackgroundTransparency = 0.2
 statsContainer.BorderSizePixel = 0
-statsContainer.Position = UDim2.new(0, 0, 0, 40)
-statsContainer.Size = UDim2.new(1, 0, 1, -40)
+statsContainer.Position = UDim2.new(0, 0, 0, 35)
+statsContainer.Size = UDim2.new(1, 0, 1, -35)
 statsContainer.Parent = mainFrame
 
 -- Label de estadísticas
 local statsLabel = Instance.new("TextLabel")
 statsLabel.Name = "StatsLabel"
 statsLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+statsLabel.BackgroundTransparency = 0.2
 statsLabel.BorderSizePixel = 0
-statsLabel.Position = UDim2.new(0, 10, 0, 10)
-statsLabel.Size = UDim2.new(1, -20, 1, -20)
+statsLabel.Position = UDim2.new(0, 5, 0, 5)
+statsLabel.Size = UDim2.new(1, -10, 1, -10)
 statsLabel.Font = Enum.Font.GothamSemibold
 statsLabel.TextColor3 = Color3.fromRGB(30, 30, 30)
-statsLabel.TextSize = 16
+statsLabel.TextSize = 12
 statsLabel.TextXAlignment = Enum.TextXAlignment.Left
 statsLabel.TextYAlignment = Enum.TextYAlignment.Top
 statsLabel.TextWrapped = true
@@ -558,14 +561,11 @@ task.spawn(function()
         local gained = rebirthsStat.Value - initialRebirths
         
         statsLabel.Text = string.format(
-            "⏱️ TIME: %dd %dh %dm %ds\n\n" ..
-            "✨ REBIRTHS: %s\n\n" ..
-            "📊 GAINED: %s\n\n" ..
-            "🚀 STATUS: %s",
+            "⏱️ %dd %dh %dm %ds\n✨ %s\n📊 %s\n🚀 %s",
             days, hours, minutes, seconds,
             formatNumber(rebirthsStat.Value),
             formatNumber(gained),
-            isRunning and "🔴 RUNNING" or "⏸️  PAUSED"
+            isRunning and "RUNNING" or "PAUSED"
         )
         task.wait(0.5)
     end
