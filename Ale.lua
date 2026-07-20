@@ -5,7 +5,7 @@ local window = library:AddWindow("ALEKING HUB | Private Farming", {
     title_bar = {Color3.fromRGB(220, 220, 220), Color3.fromRGB(80, 80, 80)},
     background = {Color3.fromRGB(192, 192, 192)},
     background_transparency = 0.3,
-    min_size = Vector2.new(350, 500),
+    min_size = Vector2.new(300, 600),
     toggle_key = Enum.KeyCode.RightShift,
     can_resize = true,
 })
