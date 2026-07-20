@@ -496,7 +496,7 @@ mainFrame.Name = "TimeFrame"
 mainFrame.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
 mainFrame.BorderSizePixel = 0
 mainFrame.Position = UDim2.new(0.7, 0, 0.1, 0)
-mainFrame.Size = UDim2.new(0, 300, 0, 150)
+mainFrame.Size = UDim2.new(0, 300, 0, 170)
 mainFrame.Parent = screenGui
 mainFrame.Active = true
 mainFrame.Draggable = true
@@ -510,7 +510,7 @@ timeDisplayLabel.Position = UDim2.new(0, 0, 0, 0)
 timeDisplayLabel.Size = UDim2.new(1, 0, 1, 0)
 timeDisplayLabel.Font = Enum.Font.GothamBold
 timeDisplayLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-timeDisplayLabel.TextSize = 28
+timeDisplayLabel.TextSize = 32
 timeDisplayLabel.TextWrapped = true
 timeDisplayLabel.Parent = mainFrame
 
