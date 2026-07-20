@@ -211,7 +211,7 @@ FastRebTab:AddLabel("")
 local RebirthLabel = FastRebTab:AddLabel("Rebirthing:")
 RebirthLabel.TextSize = 20
 
-FastRebTab:AddSwitch("Fast Rebirth", function(state)
+local fastRebirthSwitch = FastRebTab:AddSwitch("Fast Rebirth", function(state)
     isRunning = state
     
     if state then
@@ -222,6 +222,7 @@ FastRebTab:AddSwitch("Fast Rebirth", function(state)
         updateUI(true)
     end
 end)
+fastRebirthSwitch:Set(true)
 
 rebirthsStat:GetPropertyChangedSignal("Value"):Connect(function()
     updateRebirthsLabel() 
@@ -238,7 +239,9 @@ end)
 FastRebTab:AddLabel("")
 FastRebTab:AddLabel("Misc:").TextSize = 20
 
+local hideFramesActive = true
 local hideFramesSwitch = FastRebTab:AddSwitch("Hide Frames", function(bool)
+    hideFramesActive = bool
     for _, name in ipairs(blockedFrames) do
         local frame = replicatedStorage:FindFirstChild(name)
         if frame and frame:IsA("GuiObject") then
@@ -246,23 +249,31 @@ local hideFramesSwitch = FastRebTab:AddSwitch("Hide Frames", function(bool)
         end
     end
 end)
+hideFramesSwitch:Set(true)
 
 -- Lock Position Switch
-local switch = FastRebTab:AddSwitch("Lock Position", function(Value)
-    if Value then
+local lockPositionActive = true
+local lockPositionConnection = nil
+
+local function activateLockPosition()
+    if lockPositionActive and not lockPositionConnection then
         local currentPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-        getgenv().posLock = game:GetService("RunService").Heartbeat:Connect(function()
+        lockPositionConnection = game:GetService("RunService").Heartbeat:Connect(function()
             if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = currentPos
             end
         end)
-    else
-        if getgenv().posLock then
-            getgenv().posLock:Disconnect()
-            getgenv().posLock = nil
-        end
+    elseif not lockPositionActive and lockPositionConnection then
+        lockPositionConnection:Disconnect()
+        lockPositionConnection = nil
     end
+end
+
+local lockPositionSwitch = FastRebTab:AddSwitch("Lock Position", function(Value)
+    lockPositionActive = Value
+    activateLockPosition()
 end)
+lockPositionSwitch:Set(true)
 
 local running = false
 local thread = nil
@@ -457,65 +468,71 @@ wLabel.Font = Enum.Font.Arcade
 -- ====== TABLA DE ESTADÍSTICAS EN TIEMPO REAL ======
 
 wait(0.5)
-local ba=Instance.new("ScreenGui")
-local ca=Instance.new("TextLabel")
-local da=Instance.new("Frame")
-local _b=Instance.new("TextLabel")
-local ab=Instance.new("TextLabel")
-local estadisticas = Instance.new("TextLabel")
 
-ba.Parent=game.CoreGui
-ba.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-ca.Parent=ba
-ca.Active=true
-ca.BackgroundColor3=Color3.new(0.176471,0.176471,0.176471)
-ca.Draggable=true
-ca.Position=UDim2.new(0.698610067,0,0.098096624,0)
-ca.Size=UDim2.new(0,370,0,52)
-ca.Font=Enum.Font.SourceSansSemibold
-ca.Text="AleKing Stats Rebirth"
-ca.TextColor3=Color3.new(192,192,192)
-ca.TextSize=22
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AleKingStatsGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = game.CoreGui
 
-da.Parent=ca
-da.BackgroundColor3=Color3.new(0.196078,0.196078,0.196078)
-da.Position=UDim2.new(0,0,1.0192306,0)
-da.Size=UDim2.new(0,370,0,200)
+-- Crear el marco principal (como el de Anti Afk)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Position = UDim2.new(0.7, 0, 0.1, 0)
+mainFrame.Size = UDim2.new(0, 400, 0, 280)
+mainFrame.Parent = screenGui
+mainFrame.Active = true
+mainFrame.Draggable = true
 
-estadisticas.Parent=da
-estadisticas.BackgroundColor3=Color3.new(0.176471,0.176471,0.176471)
-estadisticas.Position=UDim2.new(0,0,0,0)
-estadisticas.Size=UDim2.new(0,370,0,200)
-estadisticas.Font=Enum.Font.Arial
-estadisticas.TextColor3=Color3.new(192,192,192)
-estadisticas.TextSize=16
-estadisticas.TextXAlignment=Enum.TextXAlignment.Left
-estadisticas.TextYAlignment=Enum.TextYAlignment.Top
-estadisticas.TextWrapped=true
+-- Título
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+titleLabel.BorderSizePixel = 0
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+titleLabel.TextSize = 24
+titleLabel.Text = "AleKing Stats Rebirth"
+titleLabel.Parent = mainFrame
 
-_b.Parent=da
-_b.BackgroundColor3=Color3.new(0.176471,0.176471,0.176471)
-_b.Position=UDim2.new(0,0,0.800455689,0)
-_b.Size=UDim2.new(0,370,0,21)
-_b.Font=Enum.Font.Arial
-_b.Text="Made by xxd3athk1ngxx"
-_b.TextColor3=Color3.new(192,192,192)
-_b.TextSize=20
+-- Contenedor de estadísticas
+local statsFrame = Instance.new("Frame")
+statsFrame.Name = "StatsFrame"
+statsFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+statsFrame.BorderSizePixel = 0
+statsFrame.Position = UDim2.new(0, 0, 0, 40)
+statsFrame.Size = UDim2.new(1, 0, 1, -80)
+statsFrame.Parent = mainFrame
 
-ab.Parent=da
-ab.BackgroundColor3=Color3.new(0.176471,0.176471,0.176471)
-ab.Position=UDim2.new(0,0,0.158377,0)
-ab.Size=UDim2.new(0,370,0,44)
-ab.Font=Enum.Font.ArialBold
-ab.Text="Status: Active"
-ab.TextColor3=Color3.new(192,192,192)
-ab.TextSize=20
+local statsLabel = Instance.new("TextLabel")
+statsLabel.Name = "StatsLabel"
+statsLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+statsLabel.BorderSizePixel = 0
+statsLabel.Position = UDim2.new(0, 10, 0, 10)
+statsLabel.Size = UDim2.new(1, -20, 1, -20)
+statsLabel.Font = Enum.Font.GothamSemibold
+statsLabel.TextColor3 = Color3.fromRGB(192, 192, 192)
+statsLabel.TextSize = 18
+statsLabel.TextXAlignment = Enum.TextXAlignment.Left
+statsLabel.TextYAlignment = Enum.TextYAlignment.Top
+statsLabel.TextWrapped = true
+statsLabel.Parent = statsFrame
 
-local bb=game:service'VirtualUser'
-game:service'Players'.LocalPlayer.Idled:connect(function()
-    bb:CaptureController()bb:ClickButton2(Vector2.new())
-    ab.Text="Roblox tried kicking you but I didnt let them!"wait(2)ab.Text="Status : Active"
-end)
+-- Pie de página
+local footerLabel = Instance.new("TextLabel")
+footerLabel.Name = "FooterLabel"
+footerLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+footerLabel.BorderSizePixel = 0
+footerLabel.Position = UDim2.new(0, 0, 1, -40)
+footerLabel.Size = UDim2.new(1, 0, 0, 40)
+footerLabel.Font = Enum.Font.Gotham
+footerLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+footerLabel.TextSize = 14
+footerLabel.Text = "Made by xxd3athk1ngxx"
+footerLabel.Parent = mainFrame
 
 -- Actualizar estadísticas en tiempo real
 task.spawn(function()
@@ -528,18 +545,27 @@ task.spawn(function()
         
         local gained = rebirthsStat.Value - initialRebirths
         
-        estadisticas.Text = string.format(
-            "⏱️ Time: %dd %dh %dm %ds\n" ..
-            "✨ Rebirths: %s\n" ..
-            "📊 Gained: %s\n" ..
-            "🚀 Status: %s",
+        statsLabel.Text = string.format(
+            "⏱️  TIME: %dd %dh %dm %ds\n\n" ..
+            "✨  REBIRTHS: %s\n\n" ..
+            "📊  GAINED: %s\n\n" ..
+            "🚀  STATUS: %s",
             days, hours, minutes, seconds,
             formatNumber(rebirthsStat.Value),
             formatNumber(gained),
-            isRunning and "🔴 RUNNING" or "⏸️ PAUSED"
+            isRunning and "🔴 RUNNING" or "⏸️  PAUSED"
         )
         task.wait(0.5)
     end
+end)
+
+-- Anti AFK
+local bb=game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+    bb:CaptureController()bb:ClickButton2(Vector2.new())
+    footerLabel.Text = "Anti-AFK Activated!"
+    task.wait(2)
+    footerLabel.Text = "Made by xxd3athk1ngxx"
 end)
 
 -- ====== AUTO START AL EJECUTAR ======
@@ -554,25 +580,6 @@ task.wait(0.2)
 VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
 task.wait(0.05)
 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-task.wait(0.5)
+task.wait(1)
 
--- 2. Activar Fast Rebirth
-isRunning = true
-startTime = tick()
-task.spawn(fastRebirthLoop)
-
--- 3. Activar Lock Position
-local currentPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-getgenv().posLock = game:GetService("RunService").Heartbeat:Connect(function()
-    if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = currentPos
-    end
-end)
-
--- 4. Activar Hide Frames
-for _, name in ipairs(blockedFrames) do
-    local frame = replicatedStorage:FindFirstChild(name)
-    if frame and frame:IsA("GuiObject") then
-        frame.Visible = false
-    end
-end
+-- 2, 3, 4 Ya están activados por los .Set(true) en los switches
