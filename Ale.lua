@@ -2,9 +2,9 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/imhen
 
 local window = library:AddWindow("ALEKING HUB | Private Farming", {
     main_color = Color3.fromRGB(192, 192, 192),
-    title_bar = {Color3.fromRGB(220, 220, 220), Color3.fromRGB(150, 150, 150)},
-    background = {Color3.fromRGB(40, 40, 40)},
-    background_transparency = 0,
+    title_bar = {Color3.fromRGB(220, 220, 220), Color3.fromRGB(80, 80, 80)},
+    background = {Color3.fromRGB(60, 60, 60)},
+    background_transparency = 0.15,
     min_size = Vector2.new(600, 600),
     toggle_key = Enum.KeyCode.RightShift,
     can_resize = true,
@@ -488,7 +488,7 @@ FastRebTab:AddButton("Jungle Lift",function()
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
 end)
 
--- ====== CUADRO DE TIEMPO EN PANTALLA ======
+-- ====== CUADRO DE ESTADÍSTICAS EN PANTALLA ======
 
 task.wait(0.5)
 
@@ -501,27 +501,52 @@ screenGui.Parent = game.CoreGui
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "TimeFrame"
 mainFrame.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
-mainFrame.BorderSizePixel = 0
+mainFrame.BorderSizePixel = 2
+mainFrame.BorderColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.Position = UDim2.new(0.7, 0, 0.1, 0)
-mainFrame.Size = UDim2.new(0, 300, 0, 170)
+mainFrame.Size = UDim2.new(0, 320, 0, 220)
 mainFrame.Parent = screenGui
 mainFrame.Active = true
 mainFrame.Draggable = true
 
--- Label de tiempo
-local timeDisplayLabel = Instance.new("TextLabel")
-timeDisplayLabel.Name = "TimeDisplay"
-timeDisplayLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
-timeDisplayLabel.BorderSizePixel = 0
-timeDisplayLabel.Position = UDim2.new(0, 0, 0, 0)
-timeDisplayLabel.Size = UDim2.new(1, 0, 1, 0)
-timeDisplayLabel.Font = Enum.Font.GothamBold
-timeDisplayLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-timeDisplayLabel.TextSize = 32
-timeDisplayLabel.TextWrapped = true
-timeDisplayLabel.Parent = mainFrame
+-- Título
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "Title"
+titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+titleLabel.BorderSizePixel = 0
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextColor3 = Color3.fromRGB(192, 192, 192)
+titleLabel.TextSize = 18
+titleLabel.Text = "⏱️ AleKing Stats"
+titleLabel.Parent = mainFrame
 
--- Actualizar tiempo en tiempo real
+-- Contenedor de stats
+local statsContainer = Instance.new("Frame")
+statsContainer.Name = "StatsContainer"
+statsContainer.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+statsContainer.BorderSizePixel = 0
+statsContainer.Position = UDim2.new(0, 0, 0, 40)
+statsContainer.Size = UDim2.new(1, 0, 1, -40)
+statsContainer.Parent = mainFrame
+
+-- Label de estadísticas
+local statsLabel = Instance.new("TextLabel")
+statsLabel.Name = "StatsLabel"
+statsLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+statsLabel.BorderSizePixel = 0
+statsLabel.Position = UDim2.new(0, 10, 0, 10)
+statsLabel.Size = UDim2.new(1, -20, 1, -20)
+statsLabel.Font = Enum.Font.GothamSemibold
+statsLabel.TextColor3 = Color3.fromRGB(30, 30, 30)
+statsLabel.TextSize = 16
+statsLabel.TextXAlignment = Enum.TextXAlignment.Left
+statsLabel.TextYAlignment = Enum.TextYAlignment.Top
+statsLabel.TextWrapped = true
+statsLabel.Parent = statsContainer
+
+-- Actualizar estadísticas en tiempo real
 task.spawn(function()
     while true do
         local elapsed = isRunning and (tick() - startTime + totalElapsed) or totalElapsed
@@ -530,10 +555,19 @@ task.spawn(function()
         local minutes = math.floor((elapsed % 3600) / 60)
         local seconds = math.floor(elapsed % 60)
         
-        timeDisplayLabel.Text = string.format("%dd %dh %dm %ds\n%s", 
+        local gained = rebirthsStat.Value - initialRebirths
+        
+        statsLabel.Text = string.format(
+            "⏱️ TIME: %dd %dh %dm %ds\n\n" ..
+            "✨ REBIRTHS: %s\n\n" ..
+            "📊 GAINED: %s\n\n" ..
+            "🚀 STATUS: %s",
             days, hours, minutes, seconds,
-            isRunning and "Rebirthing" or "Paused")
-        task.wait(0.1)
+            formatNumber(rebirthsStat.Value),
+            formatNumber(gained),
+            isRunning and "🔴 RUNNING" or "⏸️  PAUSED"
+        )
+        task.wait(0.5)
     end
 end)
 
