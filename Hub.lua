@@ -11,7 +11,7 @@ end
 Players.LocalPlayer.Idled:Connect(preventAFK)
 print("Anti-AFK ativado!")
 
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/SadOz8/U/main/I", true))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lordoverlord40-wq/OVER/refs/heads/main/LibraryPaid.lua", true))()
 
 local player = game.Players.LocalPlayer
 local displayName = player.DisplayName or player.Name
