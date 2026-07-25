@@ -536,7 +536,7 @@ statsContainer.Parent = mainFrame
 -- Label de estadÃ­sticas
 local statsLabel = Instance.new("TextLabel")
 statsLabel.Name = "StatsLabel"
-statsLabel.BackgroundColor3 = Color3.fromRGB(192, 192, 192)
+statsLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 statsLabel.BackgroundTransparency = 0.2
 statsLabel.BorderSizePixel = 0
 statsLabel.Position = UDim2.new(0, 5, 0, 5)
